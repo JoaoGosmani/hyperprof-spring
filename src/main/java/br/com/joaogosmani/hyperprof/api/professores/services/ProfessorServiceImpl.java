@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import br.com.joaogosmani.hyperprof.api.professores.dtos.ProfessorRequest;
 import br.com.joaogosmani.hyperprof.api.professores.dtos.ProfessorResponse;
 import br.com.joaogosmani.hyperprof.api.professores.mappers.ProfessorMapper;
 import br.com.joaogosmani.hyperprof.core.exceptions.ProfessorNotFoundException;
@@ -30,6 +31,14 @@ public class ProfessorServiceImpl implements ProfessorService {
         return professorRepository.findById(professorId)
             .map(professorMapper::toProfessorResponse)
             .orElseThrow(ProfessorNotFoundException::new);
+    }
+
+    @Override
+    public ProfessorResponse cadastrarProfessor(ProfessorRequest professorRequest) {
+        var professorParaCadastrar = professorMapper.toProfessor(professorRequest);
+        var professorCadastrado = professorRepository.save(professorParaCadastrar);
+
+        return professorMapper.toProfessorResponse(professorCadastrado);
     }
     
 }
