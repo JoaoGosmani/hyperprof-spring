@@ -2,6 +2,8 @@ package br.com.joaogosmani.hyperprof.api.professores.services;
 
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,7 @@ import br.com.joaogosmani.hyperprof.api.professores.dtos.ProfessorRequest;
 import br.com.joaogosmani.hyperprof.api.professores.dtos.ProfessorResponse;
 import br.com.joaogosmani.hyperprof.api.professores.mappers.ProfessorMapper;
 import br.com.joaogosmani.hyperprof.core.exceptions.ProfessorNotFoundException;
+import br.com.joaogosmani.hyperprof.core.models.AuthenticatedUser;
 import br.com.joaogosmani.hyperprof.core.repositories.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -42,6 +45,17 @@ public class ProfessorServiceImpl implements ProfessorService {
         var professorCadastrado = professorRepository.save(professorParaCadastrar);
 
         return professorMapper.toProfessorResponse(professorCadastrado);
+    }
+
+    @Override
+    public ProfessorResponse atualizarProfessorLogado(ProfessorRequest professorRequest) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var professor = ((AuthenticatedUser) authentication.getPrincipal()).getProfessor();
+        BeanUtils.copyProperties(professorRequest, professor, "id", "password", "createdAt", "updatedAt");
+        professor.setPassword(passwordEncoder.encode(professorRequest.getPassword()));
+        var professorAtualizado = professorRepository.save(professor);
+        
+        return professorMapper.toProfessorResponse(professorAtualizado);
     }
     
 }
