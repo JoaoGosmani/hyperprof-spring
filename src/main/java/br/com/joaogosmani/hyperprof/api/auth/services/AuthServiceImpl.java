@@ -49,5 +49,10 @@ public class AuthServiceImpl implements AuthService {
             .refreshToken(tokenService.gerarRefreshToken(subject))
             .build();
     }
+
+    @Override
+    public void logout(String token, RefreshRequest refreshRequest) {
+        tokenService.invalidarTokens(token, refreshRequest.getRefreshToken());
+    }
     
 }
