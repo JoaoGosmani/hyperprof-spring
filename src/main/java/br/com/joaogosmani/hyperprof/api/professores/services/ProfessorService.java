@@ -7,6 +7,7 @@ import br.com.joaogosmani.hyperprof.api.professores.dtos.ProfessorResponse;
 
 public interface ProfessorService {
     
+    void excluirProfessorLogado();
     List<ProfessorResponse> buscarProfessores(String descricao);
     ProfessorResponse buscarProfessorPorId(Long professorId);
     ProfessorResponse cadastrarProfessor(ProfessorRequest professorRequest);
