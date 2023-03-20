@@ -1,11 +1,15 @@
 package br.com.joaogosmani.hyperprof.api.alunos.services;
 
+import java.util.List;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import br.com.joaogosmani.hyperprof.api.alunos.dtos.AlunoRequest;
 import br.com.joaogosmani.hyperprof.api.alunos.dtos.AlunoResponse;
 import br.com.joaogosmani.hyperprof.api.alunos.mappers.AlunoMapper;
 import br.com.joaogosmani.hyperprof.core.exceptions.ProfessorNotFoundException;
+import br.com.joaogosmani.hyperprof.core.models.AuthenticatedUser;
 import br.com.joaogosmani.hyperprof.core.repositories.AlunoRepository;
 import br.com.joaogosmani.hyperprof.core.repositories.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +32,16 @@ public class AlunoServiceImpl implements AlunoService {
         var alunoCadastrado = alunoRepository.save(alunoParaCadastrar);
 
         return alunoMapper.toAlunoResponse(alunoCadastrado);
+    }
+
+    @Override
+    public List<AlunoResponse> listarAlunosPorProfessorLogado() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var professor = ((AuthenticatedUser) authentication.getPrincipal()).getProfessor();
+        return alunoRepository.findByProfessor(professor)
+            .stream()
+            .map(alunoMapper::toAlunoResponse)
+            .toList();
     }
     
 }
